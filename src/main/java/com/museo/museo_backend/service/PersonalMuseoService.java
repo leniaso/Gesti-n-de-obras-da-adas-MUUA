@@ -13,7 +13,7 @@ public class PersonalMuseoService {
         return repo.findById(id).orElseThrow(() -> new RuntimeException("Personal no encontrado con id: " + id));
     }
     public PersonalMuseo crear(PersonalMuseoRequest r) {
-        return repo.save(PersonalMuseo.builder().nombre(r.getNombre()).apellido(r.getApellido()).email(r.getEmail()).celular(r.getCelular()).build());
+        return repo.save(PersonalMuseo.builder().id(r.getId()).nombre(r.getNombre()).apellido(r.getApellido()).email(r.getEmail()).celular(r.getCelular()).build());
     }
     public PersonalMuseo editar(Integer id, PersonalMuseoRequest r) {
         PersonalMuseo p = buscarPorId(id);

@@ -13,12 +13,14 @@ public interface ObraRepository extends JpaRepository<Obra, Integer> {
     List<Obra> findByTipoId(Integer idTipo);
     @Query("SELECT o FROM Obra o WHERE EXTRACT(YEAR FROM o.fechaCreacion) = :anio")
     List<Obra> findByAnioCreacion(@Param("anio") int anio);
-    @Query("SELECT o FROM Obra o WHERE " +
-           "(:autor IS NULL OR LOWER(o.autor) LIKE LOWER(CONCAT('%',:autor,'%'))) AND " +
-           "(:titulo IS NULL OR LOWER(o.titulo) LIKE LOWER(CONCAT('%',:titulo,'%'))) AND " +
-           "(:idTecnica IS NULL OR o.tecnica.id = :idTecnica) AND " +
-           "(:idTipo IS NULL OR o.tipo.id = :idTipo) AND " +
-           "(:anio IS NULL OR EXTRACT(YEAR FROM o.fechaCreacion) = :anio)")
+    @Query(value = """
+        SELECT * FROM obras o
+        WHERE (:autor IS NULL OR LOWER(o.autor::text) LIKE LOWER(CONCAT('%', :autor, '%')))
+        AND (:titulo IS NULL OR LOWER(o.titulo::text) LIKE LOWER(CONCAT('%', :titulo, '%')))
+        AND (:idTecnica IS NULL OR o.id_tecnica = :idTecnica)
+        AND (:idTipo IS NULL OR o.id_tipo = :idTipo)
+        AND (:anio IS NULL OR EXTRACT(YEAR FROM o.fecha_creacion) = :anio)
+        """, nativeQuery = true)
     List<Obra> busquedaAvanzada(@Param("autor") String autor, @Param("titulo") String titulo,
                                 @Param("idTecnica") Integer idTecnica, @Param("idTipo") Integer idTipo,
                                 @Param("anio") Integer anio);

@@ -9,4 +9,3 @@ public interface ObraDeterioradaRepository extends JpaRepository<ObraDeteriorada
     List<ObraDeteriorada> findByEstado(EstadoObra estado);
     List<ObraDeteriorada> findByObraId(Integer idObra);
 }
-

@@ -3,6 +3,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class PersonalMuseoRequest {
+    @NotNull(message = "La cedula es obligatoria") private Integer id;
     @NotBlank(message="El nombre es obligatorio") private String nombre;
     @NotBlank(message="El apellido es obligatorio") private String apellido;
     @NotBlank @Email(message="Email invalido") private String email;
