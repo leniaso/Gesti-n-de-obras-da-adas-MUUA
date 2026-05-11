@@ -3,6 +3,10 @@ import com.museo.museo_backend.dto.ObraRequest;
 import com.museo.museo_backend.entity.*;
 import com.museo.museo_backend.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 @Service @RequiredArgsConstructor
@@ -47,5 +51,19 @@ public class ObraService {
     }
     public List<Obra> busquedaAvanzada(String autor, String titulo, Integer idTecnica, Integer idTipo, Integer anio) {
         return obraRepository.busquedaAvanzada(autor, titulo, idTecnica, idTipo, anio);
+    }
+
+    public Page<Obra> listarPaginado(int page, int size) {
+    return obraRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending()));
+}
+
+    public Page<Obra> buscarPaginado(String titulo, String autor, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        if ((titulo == null || titulo.isEmpty()) && (autor == null || autor.isEmpty())) {
+            return obraRepository.findAll(pageable);
+        }
+        String t = titulo != null ? titulo : "";
+        String a = autor  != null ? autor  : "";
+        return obraRepository.findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCase(t, a, pageable);
     }
 }

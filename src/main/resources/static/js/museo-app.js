@@ -117,15 +117,19 @@ function cargarSelectoresFiltros() {
     poblarSelect(document.getElementById('filtro-tecnica'), _tecnicas, t => t.id, t => t.nombre, 'Todas');
     poblarSelect(document.getElementById('b-tecnica'), _tecnicas, t => t.id, t => t.nombre, 'Todas');
     poblarSelect(document.getElementById('b-tipo'), _tipos, t => t.id, t => t.tipoObra, 'Todos');
-    poblarSelect(document.getElementById('filtro-tecnica-det'), _tecnicas, t => t.id, t => t.nombre, 'Todas');
 }
 
 async function cargarObras() {
     const tb = document.getElementById('tabla-obras');
     tb.innerHTML = '<tr><td colspan="8" class="loading">Cargando...</td></tr>';
     try {
-        const obras = await api('/obras');
-        renderTablaObras(obras, 'tabla-obras', 8);
+        const params = new URLSearchParams({ page: _paginaActual, size: 20 });
+        if (_filtroTitulo) params.set('titulo', _filtroTitulo);
+        if (_filtroAutor)  params.set('autor',  _filtroAutor);
+        const res = await api('/obras?' + params);
+        _totalPaginas = res.totalPages;
+        actualizarPaginacion();
+        renderTablaObras(res.content, 'tabla-obras', 8);
     } catch (e) { tb.innerHTML = `<tr><td colspan="8" class="loading">${e.message}</td></tr>`; }
 }
 
@@ -152,20 +156,39 @@ function renderTablaObras(obras, tbId, cols) {
     `).join('');
 }
 
-async function buscarObras() {
-    const params = new URLSearchParams();
-    const titulo = document.getElementById('filtro-titulo').value;
-    const autor = document.getElementById('filtro-autor').value;
-    const anio = document.getElementById('filtro-anio').value;
-    const tec = document.getElementById('filtro-tecnica').value;
-    if (titulo) params.set('titulo', titulo);
-    if (autor) params.set('autor', autor);
-    if (anio) params.set('anio', anio);
-    if (tec) params.set('idTecnica', tec);
-    try {
-        const obras = await api('/obras/buscar?' + params);
-        renderTablaObras(obras, 'tabla-obras', 8);
-    } catch (e) { toast(e.message, 'error'); }
+function buscarObras() {
+    _filtroTitulo = document.getElementById('f-titulo')?.value || '';
+    _filtroAutor  = document.getElementById('f-autor')?.value  || '';
+    _paginaActual = 0;
+    cargarObras();
+}
+
+let _paginaActual = 0;
+let _totalPaginas = 0;
+let _filtroTitulo = '';
+let _filtroAutor  = '';
+
+function resetObras() {
+    _filtroTitulo = '';
+    _filtroAutor  = '';
+    _paginaActual = 0;
+    document.getElementById('f-titulo').value = '';
+    document.getElementById('f-autor').value  = '';
+    cargarObras();
+}
+
+function cambiarPagina(delta) {
+    const nueva = _paginaActual + delta;
+    if (nueva < 0 || nueva >= _totalPaginas) return;
+    _paginaActual = nueva;
+    cargarObras();
+}
+
+function actualizarPaginacion() {
+    document.getElementById('info-pagina').textContent =
+        `Página ${_paginaActual + 1} de ${_totalPaginas}`;
+    document.getElementById('btn-prev').disabled = _paginaActual === 0;
+    document.getElementById('btn-next').disabled = _paginaActual >= _totalPaginas - 1;
 }
 
 async function submitObra(e) {

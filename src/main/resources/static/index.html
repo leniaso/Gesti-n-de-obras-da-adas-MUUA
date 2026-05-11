@@ -71,31 +71,26 @@
             <p class="page-subtitle">Registro completo de obras del museo</p>
 
             <div class="card">
-                <div class="filters">
+                                <div class="filters">
                     <div class="form-group">
-                        <label>Buscar por título</label>
-                        <input type="text" id="filtro-titulo" placeholder="Título de la obra...">
+                        <label>Título</label>
+                        <input type="text" id="f-titulo" placeholder="Buscar por título...">
                     </div>
                     <div class="form-group">
                         <label>Autor</label>
-                        <input type="text" id="filtro-autor" placeholder="Nombre del autor...">
+                        <input type="text" id="f-autor" placeholder="Nombre del autor...">
                     </div>
-                    <div class="form-group">
-                        <label>Año</label>
-                        <input type="number" id="filtro-anio" placeholder="Ej: 1920">
-                    </div>
-                    <div class="form-group">
-                        <label>Técnica</label>
-                        <select id="filtro-tecnica">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
-                    <div>
+                    <div style="display:flex; gap:8px; align-items:flex-end">
                         <button class="btn btn-primary" onclick="buscarObras()">🔍 Buscar</button>
+                        <button class="btn btn-secondary" onclick="resetObras()">↺ Todo</button>
                     </div>
-                    <div>
-                        <button class="btn btn-secondary" onclick="cargarObras()">↺ Todo</button>
-                    </div>
+                </div>
+                
+                <!-- Paginación -->
+                <div id="paginacion" style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:16px; margin-bottom:4px;">
+                    <button class="btn btn-secondary btn-sm" id="btn-prev" onclick="cambiarPagina(-1)">← Anterior</button>
+                    <span id="info-pagina" style="font-size:.85rem; color:#555"></span>
+                    <button class="btn btn-secondary btn-sm" id="btn-next" onclick="cambiarPagina(1)">Siguiente →</button>
                 </div>
 
                 <div class="table-wrapper">

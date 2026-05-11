@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 @Repository
 public interface ObraRepository extends JpaRepository<Obra, Integer> {
     List<Obra> findByAutorContainingIgnoreCase(String autor);
@@ -24,4 +26,8 @@ public interface ObraRepository extends JpaRepository<Obra, Integer> {
     List<Obra> busquedaAvanzada(@Param("autor") String autor, @Param("titulo") String titulo,
                                 @Param("idTecnica") Integer idTecnica, @Param("idTipo") Integer idTipo,
                                 @Param("anio") Integer anio);
+
+    Page<Obra> findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCase(
+    String titulo, String autor, Pageable pageable);
+    Page<Obra> findAll(Pageable pageable);
 }
