@@ -69,13 +69,18 @@ let _tecnicas = [], _tipos = [], _personal = [], _obras = [], _deterioradas = []
 
 async function cargarCatalogos() {
     try {
-        [_tecnicas, _tipos, _personal, _obras, _deterioradas] = await Promise.all([
+        const [tec, tip, per, obraPag, det] = await Promise.all([
             api('/catalogos/tecnicas'),
             api('/catalogos/tipos-obras'),
             api('/personal'),
-            api('/obras'),
+            api('/obras?page=0&size=9999'),
             api('/obras-deterioradas'),
         ]);
+        _tecnicas     = tec;
+        _tipos        = tip;
+        _personal     = per;
+        _obras        = obraPag.content;
+        _deterioradas = det;
     } catch (e) { console.warn('Catálogos:', e.message); }
 }
 
@@ -94,15 +99,19 @@ async function cargarSelectores(formId) {
     const f = document.getElementById(formId);
     if (!f) return;
 
-    // Siempre recarga frescos del backend al abrir el formulario
     try {
-        [_tecnicas, _tipos, _personal, _obras, _deterioradas] = await Promise.all([
+        const [tec, tip, per, obraPag, det] = await Promise.allSettled([
             api('/catalogos/tecnicas'),
             api('/catalogos/tipos-obras'),
             api('/personal'),
-            api('/obras'),
+            api('/obras?page=0&size=9999'),
             api('/obras-deterioradas'),
         ]);
+        _tecnicas     = tec.status     === 'fulfilled' ? tec.value          : _tecnicas;
+        _tipos        = tip.status     === 'fulfilled' ? tip.value          : _tipos;
+        _personal     = per.status     === 'fulfilled' ? per.value          : _personal;
+        _obras        = obraPag.status === 'fulfilled' ? obraPag.value.content : _obras;
+        _deterioradas = det.status     === 'fulfilled' ? det.value          : _deterioradas;
     } catch (e) { toast('Error cargando datos del formulario', 'error'); return; }
 
     poblarSelect(f.querySelector('[name=idTecnica]'), _tecnicas, t => t.id, t => t.nombre, 'Seleccionar técnica...');
@@ -114,9 +123,9 @@ async function cargarSelectores(formId) {
 }
 
 function cargarSelectoresFiltros() {
-    poblarSelect(document.getElementById('filtro-tecnica'), _tecnicas, t => t.id, t => t.nombre, 'Todas');
     poblarSelect(document.getElementById('b-tecnica'), _tecnicas, t => t.id, t => t.nombre, 'Todas');
     poblarSelect(document.getElementById('b-tipo'), _tipos, t => t.id, t => t.tipoObra, 'Todos');
+    poblarSelect(document.getElementById('filtro-tecnica-det'), _tecnicas, t => t.id, t => t.nombre, 'Todas');
 }
 
 async function cargarObras() {
