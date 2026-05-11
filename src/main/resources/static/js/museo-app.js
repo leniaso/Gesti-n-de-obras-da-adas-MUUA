@@ -20,7 +20,8 @@ async function api(path, method = 'GET', body = null) {
 
 function formatDate(d) {
     if (!d) return '—';
-    return new Date(d).toLocaleDateString('es-CO');
+    const [anio, mes, dia] = d.split('-');
+    return `${dia}/${mes}/${anio}`;
 }
 
 function badgeEstado(estado) {
