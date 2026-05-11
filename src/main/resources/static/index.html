@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUUA — Sistema de Trazabilidad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/museo-styles.css">
+</head>
+<body>
+
+<header>
+    <div class="header-title">
+        Sistema de Trazabilidad
+        <span>Museo Universitario — MUUA</span>
+    </div>
+</header>
+
+<div id="toast-container"></div>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">Obras</div>
+            <a class="nav-item active" onclick="navigate('obras-lista')">
+                <span class="icon">🖼</span> Ver Obras
+            </a>
+            <a class="nav-item" onclick="navigate('obras-nueva')">
+                <span class="icon">➕</span> Añadir Obra
+            </a>
+            <a class="nav-item" onclick="navigate('obras-buscar')">
+                <span class="icon">🔍</span> Búsqueda Avanzada
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">Deterioro</div>
+            <a class="nav-item" onclick="navigate('deterioro-reportar')">
+                <span class="icon">⚠️</span> Reportar Daño
+            </a>
+            <a class="nav-item" onclick="navigate('deterioro-lista')">
+                <span class="icon">📋</span> Ver Deterioradas
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">Restauraciones</div>
+            <a class="nav-item" onclick="navigate('restauracion-nueva')">
+                <span class="icon">🔧</span> Nueva Restauración
+            </a>
+            <a class="nav-item" onclick="navigate('restauracion-lista')">
+                <span class="icon">📄</span> Ver Restauraciones
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">Personal</div>
+            <a class="nav-item" onclick="navigate('personal-lista')">
+                <span class="icon">👤</span> Personal Museo
+            </a>
+        </div>
+
+    </aside>
+
+    <main>
+
+        <div class="page active" id="page-obras-lista">
+            <h1 class="page-title">Catálogo de Obras</h1>
+            <p class="page-subtitle">Registro completo de obras del museo</p>
+
+            <div class="card">
+                <div class="filters">
+                    <div class="form-group">
+                        <label>Buscar por título</label>
+                        <input type="text" id="filtro-titulo" placeholder="Título de la obra...">
+                    </div>
+                    <div class="form-group">
+                        <label>Autor</label>
+                        <input type="text" id="filtro-autor" placeholder="Nombre del autor...">
+                    </div>
+                    <div class="form-group">
+                        <label>Año</label>
+                        <input type="number" id="filtro-anio" placeholder="Ej: 1920">
+                    </div>
+                    <div class="form-group">
+                        <label>Técnica</label>
+                        <select id="filtro-tecnica">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="buscarObras()">🔍 Buscar</button>
+                    </div>
+                    <div>
+                        <button class="btn btn-secondary" onclick="cargarObras()">↺ Todo</button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Título</th>
+                                <th>Autor</th>
+                                <th>Año Creación</th>
+                                <th>Técnica</th>
+                                <th>Ubicación</th>
+                                <th>Última Revisión</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-obras">
+                            <tr><td colspan="8" class="loading">Cargando obras...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-obras-nueva">
+            <h1 class="page-title">Añadir Nueva Obra</h1>
+            <p class="page-subtitle">Complete todos los campos obligatorios</p>
+
+            <div class="card">
+                <div class="card-title">📋 Información de la Obra</div>
+                <form id="form-obra" onsubmit="submitObra(event)">
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label>Título *</label>
+                            <input type="text" name="titulo" required placeholder="Título completo de la obra">
+                        </div>
+                        <div class="form-group">
+                            <label>Autor</label>
+                            <input type="text" name="autor" placeholder="Nombre del autor">
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Creación</label>
+                            <input type="date" name="fechaCreacion">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Obra *</label>
+                            <select name="idTipo" required>
+                                <option value="">Seleccionar tipo...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Técnica *</label>
+                            <select name="idTecnica" required>
+                                <option value="">Seleccionar técnica...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha Última Revisión *</label>
+                            <input type="date" name="fechaUltimaRevision" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Ubicación</label>
+                            <input type="text" name="ubicacion" placeholder="Sala, vitrina, etc.">
+                        </div>
+                        <div class="form-group full">
+                            <label>Link Drive</label>
+                            <input type="url" name="linkDrive" placeholder="https://drive.google.com/...">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="navigate('obras-lista')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">💾 Guardar Obra</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="page" id="page-obras-buscar">
+            <h1 class="page-title">Búsqueda Avanzada</h1>
+            <p class="page-subtitle">Combine filtros para encontrar obras específicas</p>
+
+            <div class="card">
+                <div class="card-title">🔍 Filtros de Búsqueda</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" id="b-titulo" placeholder="Contiene...">
+                    </div>
+                    <div class="form-group">
+                        <label>Autor</label>
+                        <input type="text" id="b-autor" placeholder="Nombre del autor">
+                    </div>
+                    <div class="form-group">
+                        <label>Año de Creación</label>
+                        <input type="number" id="b-anio" placeholder="Ej: 1950">
+                    </div>
+                    <div class="form-group">
+                        <label>Técnica</label>
+                        <select id="b-tecnica">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Obra</label>
+                        <select id="b-tipo">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="limpiarBusqueda()">Limpiar</button>
+                    <button class="btn btn-primary" onclick="ejecutarBusqueda()">🔍 Buscar</button>
+                </div>
+            </div>
+
+            <div class="card" id="resultados-busqueda" style="display:none">
+                <div class="card-title">📋 Resultados</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Título</th><th>Autor</th><th>Año</th><th>Técnica</th><th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-busqueda"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-deterioro-reportar">
+            <h1 class="page-title">Reportar Obra Deteriorada</h1>
+            <p class="page-subtitle">Registre el estado de deterioro de una obra</p>
+
+            <div class="card">
+                <div class="card-title">⚠️ Datos del Deterioro</div>
+                <form id="form-deterioro" onsubmit="submitDeteriorado(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Obra *</label>
+                            <select name="idObra" required>
+                                <option value="">Seleccionar obra...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Personal que reporta</label>
+                            <select name="idPersonal">
+                                <option value="">Sin asignar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado *</label>
+                            <select name="estado" required>
+                                <option value="">Seleccionar estado...</option>
+                                <option value="estado_regular">Estado Regular</option>
+                                <option value="revision_pendiente">Revisión Pendiente</option>
+                                <option value="revision_y_tratamiento">Revisión y Tratamiento</option>
+                                <option value="tratamiento_urgente">Tratamiento Urgente</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Identificación *</label>
+                            <input type="date" name="fechaIdentificacion" required>
+                        </div>
+                        <div class="form-group full">
+                            <label>Descripción del Deterioro *</label>
+                            <textarea name="descripcion" required placeholder="Describa detalladamente el deterioro observado..."></textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="navigate('deterioro-lista')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">⚠️ Reportar Deterioro</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="page" id="page-deterioro-lista">
+            <h1 class="page-title">Obras Deterioradas</h1>
+            <p class="page-subtitle">Listado y seguimiento de obras con deterioro registrado</p>
+
+            <div class="card">
+                <div class="filters">
+                    <div class="form-group">
+                        <label>Filtrar por Estado</label>
+                        <select id="filtro-estado-det">
+                            <option value="">Todos los estados</option>
+                            <option value="estado_regular">Estado Regular</option>
+                            <option value="revision_pendiente">Revisión Pendiente</option>
+                            <option value="revision_y_tratamiento">Revisión y Tratamiento</option>
+                            <option value="tratamiento_urgente">Tratamiento Urgente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="filtrarDeterioro()">🔍 Filtrar</button>
+                    </div>
+                    <div>
+                        <button class="btn btn-secondary" onclick="cargarDeterioro()">↺ Todo</button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Obra</th>
+                                <th>Estado</th>
+                                <th>Fecha Identificación</th>
+                                <th>Personal</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-deterioro">
+                            <tr><td colspan="7" class="loading">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-restauracion-nueva">
+            <h1 class="page-title">Nueva Restauración</h1>
+            <p class="page-subtitle">Registre un proceso de restauración para una obra deteriorada</p>
+
+            <div class="card">
+                <div class="card-title">🔧 Datos de la Restauración</div>
+                <form id="form-restauracion" onsubmit="submitRestauracion(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Obra Deteriorada (Código) *</label>
+                            <select name="idObraDeteriorada" required>
+                                <option value="">Seleccionar obra deteriorada...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Personal del Museo</label>
+                            <select name="idPersonalMuseo">
+                                <option value="">Sin asignar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Restauración *</label>
+                            <select name="tipoRestauracion" required>
+                                <option value="">Seleccionar tipo...</option>
+                                <option value="mantenimiento">Mantenimiento</option>
+                                <option value="intensivo">Intensivo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado *</label>
+                            <select name="estado" required>
+                                <option value="">Seleccionar estado...</option>
+                                <option value="en_proceso">En Proceso</option>
+                                <option value="finalizado">Finalizado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Restauración *</label>
+                            <input type="date" name="fechaRestauracion" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Responsable</label>
+                            <input type="text" name="responsable" placeholder="Nombre del responsable externo">
+                        </div>
+                        <div class="form-group full">
+                            <label>Observaciones</label>
+                            <textarea name="observaciones" placeholder="Notas adicionales sobre el proceso..."></textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="navigate('restauracion-lista')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">🔧 Registrar Restauración</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="page" id="page-restauracion-lista">
+            <h1 class="page-title">Registro de Restauraciones</h1>
+            <p class="page-subtitle">Historial completo de procesos de restauración</p>
+
+            <div class="card">
+                <div class="filters">
+                    <div class="form-group">
+                        <label>Desde</label>
+                        <input type="date" id="filtro-desde">
+                    </div>
+                    <div class="form-group">
+                        <label>Hasta</label>
+                        <input type="date" id="filtro-hasta">
+                    </div>
+                    <div class="form-group">
+                        <label>Código Obra Deteriorada</label>
+                        <input type="number" id="filtro-cod-obra" placeholder="ID...">
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="filtrarRestauraciones()">🔍 Filtrar</button>
+                    </div>
+                    <div>
+                        <button class="btn btn-secondary" onclick="cargarRestauraciones()">↺ Todo</button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Obra Deteriorada</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Responsable</th>
+                                <th>Observaciones</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-restauraciones">
+                            <tr><td colspan="8" class="loading">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-personal-lista">
+            <h1 class="page-title">Personal del Museo</h1>
+            <p class="page-subtitle">Gestión del personal vinculado al museo</p>
+
+            <div class="card">
+                <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+                    <button class="btn btn-primary" onclick="abrirModalPersonal()">➕ Añadir Personal</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cédula</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Email</th>
+                                <th>Celular</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-personal">
+                            <tr><td colspan="6" class="loading">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<footer>
+    <div class="footer-logo">
+        <img src="images/logo_udea.png" alt="Universidad de Antioquia">
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-logo">
+        <img src="images/logo_facultad_ingenieria.png" alt="Facultad de Ingeniería">
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-muua">
+        <div class="muua-name">MUUA</div>
+        <div class="muua-sub">Museo Universitario<br>Universidad de Antioquia</div>
+    </div>
+</footer>
+
+<div class="modal-overlay" id="modal-obra">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>✏️ Editar Obra</h3>
+            <button class="modal-close" onclick="cerrarModal('modal-obra')">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="form-editar-obra" onsubmit="submitEditarObra(event)">
+                <input type="hidden" name="id">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Título *</label>
+                        <input type="text" name="titulo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Autor</label>
+                        <input type="text" name="autor">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Creación</label>
+                        <input type="date" name="fechaCreacion">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Obra *</label>
+                        <select name="idTipo" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Técnica *</label>
+                        <select name="idTecnica" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Última Revisión *</label>
+                        <input type="date" name="fechaUltimaRevision" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ubicación</label>
+                        <input type="text" name="ubicacion">
+                    </div>
+                    <div class="form-group full">
+                        <label>Link Drive</label>
+                        <input type="url" name="linkDrive">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-obra')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-deterioro">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>✏️ Editar Registro de Deterioro</h3>
+            <button class="modal-close" onclick="cerrarModal('modal-deterioro')">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="form-editar-deterioro" onsubmit="submitEditarDeteriorado(event)">
+                <input type="hidden" name="id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Obra *</label>
+                        <select name="idObra" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Personal</label>
+                        <select name="idPersonal"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado *</label>
+                        <select name="estado" required>
+                            <option value="estado_regular">Estado Regular</option>
+                            <option value="revision_pendiente">Revisión Pendiente</option>
+                            <option value="revision_y_tratamiento">Revisión y Tratamiento</option>
+                            <option value="tratamiento_urgente">Tratamiento Urgente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Identificación *</label>
+                        <input type="date" name="fechaIdentificacion" required>
+                    </div>
+                    <div class="form-group full">
+                        <label>Descripción *</label>
+                        <textarea name="descripcion" required></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-deterioro')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-restauracion">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>✏️ Editar Restauración</h3>
+            <button class="modal-close" onclick="cerrarModal('modal-restauracion')">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="form-editar-restauracion" onsubmit="submitEditarRestauracion(event)">
+                <input type="hidden" name="id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Obra Deteriorada *</label>
+                        <select name="idObraDeteriorada" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Personal</label>
+                        <select name="idPersonalMuseo"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo *</label>
+                        <select name="tipoRestauracion" required>
+                            <option value="mantenimiento">Mantenimiento</option>
+                            <option value="intensivo">Intensivo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado *</label>
+                        <select name="estado" required>
+                            <option value="en_proceso">En Proceso</option>
+                            <option value="finalizado">Finalizado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha *</label>
+                        <input type="date" name="fechaRestauracion" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Responsable</label>
+                        <input type="text" name="responsable">
+                    </div>
+                    <div class="form-group full">
+                        <label>Observaciones</label>
+                        <textarea name="observaciones"></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-restauracion')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-personal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modal-personal-titulo">➕ Añadir Personal</h3>
+            <button class="modal-close" onclick="cerrarModal('modal-personal')">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="form-personal" onsubmit="submitPersonal(event)">
+                <input type="hidden" name="modo">
+                <div class="form-grid">
+                    <div class="form-group" id="campo-cedula">
+                        <label>Cédula *</label>
+                        <input type="number" name="id" required placeholder="Número de cédula">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido *</label>
+                        <input type="text" name="apellido" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Celular *</label>
+                        <input type="text" name="celular" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-personal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="js/museo-app.js"></script>
+
+</body>
+</html>
