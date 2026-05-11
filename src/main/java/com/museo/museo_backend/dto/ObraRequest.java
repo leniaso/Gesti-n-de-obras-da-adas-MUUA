@@ -12,4 +12,10 @@ public class ObraRequest {
     private String ubicacion;
     private String linkDrive;
     @NotNull(message="La tecnica es obligatoria") private Integer idTecnica;
+    private String dimensiones;
+    private String integridad;
+    private String asociacionHistorica;
+    private String lugarEjecucion;
+    private String restricciones;
+    private String anotaciones;
 }

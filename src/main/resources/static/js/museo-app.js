@@ -192,6 +192,12 @@ async function editarObra(id) {
         f.querySelector('[name=fechaCreacion]').value = obra.fechaCreacion || '';
         f.querySelector('[name=fechaUltimaRevision]').value = obra.fechaUltimaRevision || '';
         f.querySelector('[name=ubicacion]').value = obra.ubicacion || '';
+        f.querySelector('[name=dimensiones]').value = obra.dimensiones || '';
+        f.querySelector('[name=integridad]').value = obra.integridad || '';
+        f.querySelector('[name=asociacionHistorica]').value = obra.asociacionHistorica || '';
+        f.querySelector('[name=lugarEjecucion]').value = obra.lugarEjecucion || '';
+        f.querySelector('[name=restricciones]').value = obra.restricciones || '';
+        f.querySelector('[name=anotaciones]').value = obra.anotaciones || '';
         f.querySelector('[name=linkDrive]').value = obra.linkDrive || '';
         poblarSelect(f.querySelector('[name=idTipo]'), _tipos, t => t.id, t => t.tipoObra);
         poblarSelect(f.querySelector('[name=idTecnica]'), _tecnicas, t => t.id, t => t.nombre);
