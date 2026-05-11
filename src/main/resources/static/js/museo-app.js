@@ -89,11 +89,23 @@ function poblarSelect(sel, items, valFn, labelFn, placeholder = '') {
     });
 }
 
-function cargarSelectores(formId) {
+async function cargarSelectores(formId) {
     const f = document.getElementById(formId);
     if (!f) return;
+
+    // Siempre recarga frescos del backend al abrir el formulario
+    try {
+        [_tecnicas, _tipos, _personal, _obras, _deterioradas] = await Promise.all([
+            api('/catalogos/tecnicas'),
+            api('/catalogos/tipos-obras'),
+            api('/personal'),
+            api('/obras'),
+            api('/obras-deterioradas'),
+        ]);
+    } catch (e) { toast('Error cargando datos del formulario', 'error'); return; }
+
     poblarSelect(f.querySelector('[name=idTecnica]'), _tecnicas, t => t.id, t => t.nombre, 'Seleccionar técnica...');
-    poblarSelect(f.querySelector('[name=idTipo]'), _tipos, t => t.id, t => t.tipoObra, 'Seleccionar tipo...');
+    poblarSelect(f.querySelector('[name=idTipo]'), _tipos, t => t.id, t => `${t.tipoObra} (${t.material})`, 'Seleccionar tipo...');
     poblarSelect(f.querySelector('[name=idPersonal]'), _personal, p => p.id, p => `${p.nombre} ${p.apellido}`, 'Sin asignar');
     poblarSelect(f.querySelector('[name=idPersonalMuseo]'), _personal, p => p.id, p => `${p.nombre} ${p.apellido}`, 'Sin asignar');
     poblarSelect(f.querySelector('[name=idObra]'), _obras, o => o.id, o => `[${o.id}] ${o.titulo}`, 'Seleccionar obra...');
