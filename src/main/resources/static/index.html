@@ -280,7 +280,7 @@
             <div class="card">
                 <div class="filters">
                     <div class="form-group">
-                        <label>Filtrar por Estado</label>
+                        <label>Estado</label>
                         <select id="filtro-estado-det">
                             <option value="">Todos los estados</option>
                             <option value="estado_regular">Estado Regular</option>
@@ -289,10 +289,22 @@
                             <option value="tratamiento_urgente">Tratamiento Urgente</option>
                         </select>
                     </div>
-                    <div>
-                        <button class="btn btn-primary" onclick="filtrarDeterioro()">🔍 Filtrar</button>
+                    <div class="form-group">
+                        <label>Autor de la Obra</label>
+                        <input id="filtro-autor-det" placeholder="Nombre del autor...">
                     </div>
-                    <div>
+                    <div class="form-group">
+                        <label>Técnica</label>
+                        <select id="filtro-tecnica-det">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Año de Creación</label>
+                        <input id="filtro-anio-det" type="number" placeholder="Ej: 1950">
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:flex-end">
+                        <button class="btn btn-primary" onclick="filtrarDeterioro()">🔍 Filtrar</button>
                         <button class="btn btn-secondary" onclick="cargarDeterioro()">↺ Todo</button>
                     </div>
                 </div>

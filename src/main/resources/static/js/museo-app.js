@@ -116,6 +116,7 @@ function cargarSelectoresFiltros() {
     poblarSelect(document.getElementById('filtro-tecnica'), _tecnicas, t => t.id, t => t.nombre, 'Todas');
     poblarSelect(document.getElementById('b-tecnica'), _tecnicas, t => t.id, t => t.nombre, 'Todas');
     poblarSelect(document.getElementById('b-tipo'), _tipos, t => t.id, t => t.tipoObra, 'Todos');
+    poblarSelect(document.getElementById('filtro-tecnica-det'), _tecnicas, t => t.id, t => t.nombre, 'Todas');
 }
 
 async function cargarObras() {
@@ -279,10 +280,19 @@ function renderDeterioro(list) {
 }
 
 async function filtrarDeterioro() {
-    const estado = document.getElementById('filtro-estado-det').value;
-    if (!estado) { cargarDeterioro(); return; }
+    const estado   = document.getElementById('filtro-estado-det').value;
+    const autor    = document.getElementById('filtro-autor-det').value;
+    const idTecnica = document.getElementById('filtro-tecnica-det').value;
+    const anio     = document.getElementById('filtro-anio-det').value;
+
+    const params = new URLSearchParams();
+    if (estado)    params.set('estado', estado);
+    if (autor)     params.set('autor', autor);
+    if (idTecnica) params.set('idTecnica', idTecnica);
+    if (anio)      params.set('anio', anio);
+
     try {
-        const list = await api('/obras-deterioradas/filtrar?estado=' + estado);
+        const list = await api('/obras-deterioradas/filtrar?' + params);
         renderDeterioro(list);
     } catch (e) { toast(e.message, 'error'); }
 }
