@@ -32,7 +32,9 @@ public class ObraDeterioradaService {
         od.setEstado(r.getEstado()); od.setFechaIdentificacion(r.getFechaIdentificacion());
         return repo.save(od);
     }
+    // en ObraDeterioradaService.java
     public List<ObraDeteriorada> filtrarAvanzado(EstadoObra estado, String autor, Integer idTecnica, Integer anio) {
-    return repo.filtrarAvanzado(estado, autor, idTecnica, anio);
-}
+        String estadoStr = estado != null ? estado.name() : null;
+        return repo.filtrarAvanzado(estadoStr, autor, idTecnica, anio);
+    }
 }

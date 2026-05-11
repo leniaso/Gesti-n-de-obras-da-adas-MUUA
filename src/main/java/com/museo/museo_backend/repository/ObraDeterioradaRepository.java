@@ -11,13 +11,16 @@ public interface ObraDeterioradaRepository extends JpaRepository<ObraDeteriorada
     List<ObraDeteriorada> findByEstado(EstadoObra estado);
     List<ObraDeteriorada> findByObraId(Integer idObra);
 
-    @Query("SELECT od FROM ObraDeteriorada od " +
-       "WHERE (:estado IS NULL OR od.estado = :estado) " +
-       "AND (:autor IS NULL OR LOWER(od.obra.autor) LIKE LOWER(CONCAT('%',:autor,'%'))) " +
-       "AND (:idTecnica IS NULL OR od.obra.tecnica.id = :idTecnica) " +
-       "AND (:anio IS NULL OR EXTRACT(YEAR FROM od.obra.fechaCreacion) = :anio)")
-        List<ObraDeteriorada> filtrarAvanzado(
-        @Param("estado") EstadoObra estado,
+  @Query(value = """
+    SELECT od.* FROM obras_deterioradas od
+    JOIN obras o ON o.id = od.id_obra
+    WHERE (:estado IS NULL OR od.estado = :estado)
+    AND (:autor IS NULL OR LOWER(o.autor::text) LIKE LOWER(CONCAT('%', :autor, '%')))
+    AND (:idTecnica IS NULL OR o.id_tecnica = :idTecnica)
+    AND (:anio IS NULL OR EXTRACT(YEAR FROM o.fecha_creacion) = :anio)
+    """, nativeQuery = true)
+List<ObraDeteriorada> filtrarAvanzado(
+        @Param("estado") String estado,
         @Param("autor") String autor,
         @Param("idTecnica") Integer idTecnica,
         @Param("anio") Integer anio);
