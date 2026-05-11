@@ -473,13 +473,14 @@ async function editarPersonal(id) {
         const p = await api('/personal/' + id);
         const f = document.getElementById('form-personal');
         document.getElementById('modal-personal-titulo').textContent = '✏️ Editar Personal';
+        f.querySelector('[name=_id_viejo]').value = p.id; 
         f.querySelector('[name=modo]').value = 'editar';
         f.querySelector('[name=id]').value = p.id;
         f.querySelector('[name=nombre]').value = p.nombre;
         f.querySelector('[name=apellido]').value = p.apellido;
         f.querySelector('[name=email]').value = p.email;
         f.querySelector('[name=celular]').value = p.celular;
-        document.getElementById('campo-cedula').style.display = 'none';
+        document.getElementById('campo-cedula').style.display = 'flex';
         abrirModal('modal-personal');
     } catch (err) { toast(err.message, 'error'); }
 }
@@ -494,8 +495,9 @@ async function submitPersonal(e) {
             await api('/personal', 'POST', data);
             toast('✅ Personal registrado');
         } else {
-            const id = data.id; delete data.id;
-            await api('/personal/' + id, 'PUT', data);
+            const idViejo = parseInt(document.querySelector('#form-personal [name=_id_viejo]').value);
+            data.id = parseInt(data.id); // id nuevo (puede ser diferente)
+            await api('/personal/' + idViejo, 'PUT', data);
             toast('✅ Personal actualizado');
         }
         cerrarModal('modal-personal');

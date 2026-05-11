@@ -26,6 +26,8 @@ public class GlobalExceptionHandler {
             mensaje = "Lo sentimos, este número de celular ya está registrado.";
         } else if (causa.contains("personal_museo_pkey") || causa.contains("obras_pkey") || causa.contains("pkey")) {
             mensaje = "Lo sentimos, ya existe un registro con ese ID.";
+        } else if (causa.contains("fk_obra_deteriorada_personal") || causa.contains("fk_restauracion") || causa.contains("restauraciones")) {
+            mensaje = "No se puede cambiar el ID de este personal porque tiene registros asociados.";
         }
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", mensaje));
     }

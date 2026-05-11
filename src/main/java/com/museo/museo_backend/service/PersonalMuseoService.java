@@ -15,9 +15,27 @@ public class PersonalMuseoService {
     public PersonalMuseo crear(PersonalMuseoRequest r) {
         return repo.save(PersonalMuseo.builder().id(r.getId()).nombre(r.getNombre()).apellido(r.getApellido()).email(r.getEmail()).celular(r.getCelular()).build());
     }
-    public PersonalMuseo editar(Integer id, PersonalMuseoRequest r) {
-        PersonalMuseo p = buscarPorId(id);
-        p.setNombre(r.getNombre()); p.setApellido(r.getApellido()); p.setEmail(r.getEmail()); p.setCelular(r.getCelular());
-        return repo.save(p);
+    public PersonalMuseo editarConId(Integer idActual, PersonalMuseoRequest r) {
+    PersonalMuseo p = buscarPorId(idActual);
+
+    // Si el id cambió, verificar que no tenga registros asociados antes de intentar
+    if (!idActual.equals(r.getId())) {
+        repo.deleteById(idActual); // esto fallará con excepción si tiene FK
+        PersonalMuseo nuevo = PersonalMuseo.builder()
+                .id(r.getId())
+                .nombre(r.getNombre())
+                .apellido(r.getApellido())
+                .email(r.getEmail())
+                .celular(r.getCelular())
+                .build();
+        return repo.save(nuevo);
     }
+
+    // Si el id no cambió, editar normal sin borrar
+    p.setNombre(r.getNombre());
+    p.setApellido(r.getApellido());
+    p.setEmail(r.getEmail());
+    p.setCelular(r.getCelular());
+    return repo.save(p);
+}
 }
