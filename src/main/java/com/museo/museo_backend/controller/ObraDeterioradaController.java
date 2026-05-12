@@ -43,7 +43,12 @@ public class ObraDeterioradaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ObraDeteriorada> editar(@PathVariable Integer id,
-                                                   @Valid @RequestBody ObraDeterioradaRequest req) {
+            @Valid @RequestBody ObraDeterioradaRequest req) {
         return ResponseEntity.ok(service.editar(id, req));
+    }
+
+    @GetMapping("/sin-restauracion-finalizada")
+    public ResponseEntity<List<ObraDeteriorada>> sinRestauracionFinalizada() {
+        return ResponseEntity.ok(service.listarSinRestauracionFinalizada());
     }
 }

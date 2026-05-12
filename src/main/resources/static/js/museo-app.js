@@ -327,16 +327,28 @@ function renderDeterioro(list) {
 }
 
 async function filtrarDeterioro() {
-    const estado = document.getElementById('filtro-estado-det').value;
-    const autor = document.getElementById('filtro-autor-det').value;
+    const sinRestaurar = document.getElementById('filtro-sin-restaurar').checked;
+
+    // Si el checkbox está activo, ignorar los demás filtros
+    if (sinRestaurar) {
+        try {
+            const list = await api('/obras-deterioradas/sin-restauracion-finalizada');
+            renderDeterioro(list);
+        } catch (e) { toast(e.message, 'error'); }
+        return;
+    }
+
+    // Si no, aplicar los filtros normales
+    const estado    = document.getElementById('filtro-estado-det').value;
+    const autor     = document.getElementById('filtro-autor-det').value;
     const idTecnica = document.getElementById('filtro-tecnica-det').value;
-    const anio = document.getElementById('filtro-anio-det').value;
+    const anio      = document.getElementById('filtro-anio-det').value;
 
     const params = new URLSearchParams();
-    if (estado) params.set('estado', estado);
-    if (autor) params.set('autor', autor);
+    if (estado)    params.set('estado', estado);
+    if (autor)     params.set('autor', autor);
     if (idTecnica) params.set('idTecnica', idTecnica);
-    if (anio) params.set('anio', anio);
+    if (anio)      params.set('anio', anio);
 
     try {
         const list = await api('/obras-deterioradas/filtrar?' + params);

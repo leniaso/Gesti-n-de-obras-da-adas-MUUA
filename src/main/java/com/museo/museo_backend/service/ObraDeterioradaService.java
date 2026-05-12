@@ -37,4 +37,8 @@ public class ObraDeterioradaService {
         String estadoStr = estado != null ? estado.name() : null;
         return repo.filtrarAvanzado(estadoStr, autor, idTecnica, anio);
     }
+
+    public List<ObraDeteriorada> listarSinRestauracionFinalizada() {
+    return repo.findSinRestauracionFinalizada();
+    }
 }
