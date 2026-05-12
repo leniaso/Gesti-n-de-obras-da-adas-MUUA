@@ -76,10 +76,10 @@ async function cargarCatalogos() {
             api('/obras?page=0&size=9999'),
             api('/obras-deterioradas'),
         ]);
-        _tecnicas     = tec;
-        _tipos        = tip;
-        _personal     = per;
-        _obras        = obraPag.content;
+        _tecnicas = tec;
+        _tipos = tip;
+        _personal = per;
+        _obras = obraPag.content;
         _deterioradas = det;
     } catch (e) { console.warn('Catálogos:', e.message); }
 }
@@ -107,11 +107,11 @@ async function cargarSelectores(formId) {
             api('/obras?page=0&size=9999'),
             api('/obras-deterioradas'),
         ]);
-        _tecnicas     = tec.status     === 'fulfilled' ? tec.value          : _tecnicas;
-        _tipos        = tip.status     === 'fulfilled' ? tip.value          : _tipos;
-        _personal     = per.status     === 'fulfilled' ? per.value          : _personal;
-        _obras        = obraPag.status === 'fulfilled' ? obraPag.value.content : _obras;
-        _deterioradas = det.status     === 'fulfilled' ? det.value          : _deterioradas;
+        _tecnicas = tec.status === 'fulfilled' ? tec.value : _tecnicas;
+        _tipos = tip.status === 'fulfilled' ? tip.value : _tipos;
+        _personal = per.status === 'fulfilled' ? per.value : _personal;
+        _obras = obraPag.status === 'fulfilled' ? obraPag.value.content : _obras;
+        _deterioradas = det.status === 'fulfilled' ? det.value : _deterioradas;
     } catch (e) { toast('Error cargando datos del formulario', 'error'); return; }
 
     poblarSelect(f.querySelector('[name=idTecnica]'), _tecnicas, t => t.id, t => t.nombre, 'Seleccionar técnica...');
@@ -134,7 +134,7 @@ async function cargarObras() {
     try {
         const params = new URLSearchParams({ page: _paginaActual, size: 20 });
         if (_filtroTitulo) params.set('titulo', _filtroTitulo);
-        if (_filtroAutor)  params.set('autor',  _filtroAutor);
+        if (_filtroAutor) params.set('autor', _filtroAutor);
         const res = await api('/obras?' + params);
         _totalPaginas = res.totalPages;
         actualizarPaginacion();
@@ -158,6 +158,7 @@ function renderTablaObras(obras, tbId, cols) {
             <td>${o.ubicacion || '—'}</td>
             <td>${formatDate(o.fechaUltimaRevision)}</td>
             <td>
+                <button class="btn btn-secondary btn-sm" onclick="verDetalleObra(${o.id})">👁</button>
                 <button class="btn btn-secondary btn-sm" onclick="editarObra(${o.id})">✏️</button>
                 ${o.linkDrive ? `<a href="${o.linkDrive}" target="_blank" class="btn btn-secondary btn-sm">📎</a>` : ''}
             </td>
@@ -167,7 +168,7 @@ function renderTablaObras(obras, tbId, cols) {
 
 function buscarObras() {
     _filtroTitulo = document.getElementById('f-titulo')?.value || '';
-    _filtroAutor  = document.getElementById('f-autor')?.value  || '';
+    _filtroAutor = document.getElementById('f-autor')?.value || '';
     _paginaActual = 0;
     cargarObras();
 }
@@ -175,14 +176,14 @@ function buscarObras() {
 let _paginaActual = 0;
 let _totalPaginas = 0;
 let _filtroTitulo = '';
-let _filtroAutor  = '';
+let _filtroAutor = '';
 
 function resetObras() {
     _filtroTitulo = '';
-    _filtroAutor  = '';
+    _filtroAutor = '';
     _paginaActual = 0;
     document.getElementById('f-titulo').value = '';
-    document.getElementById('f-autor').value  = '';
+    document.getElementById('f-autor').value = '';
     cargarObras();
 }
 
@@ -313,22 +314,23 @@ function renderDeterioro(list) {
             <td>${formatDate(d.fechaIdentificacion)}</td>
             <td>${d.personal ? d.personal.nombre + ' ' + d.personal.apellido : '—'}</td>
             <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" title="${d.descripcion}">${d.descripcion}</td>
-            <td><button class="btn btn-secondary btn-sm" onclick="editarDeteriorado(${d.id})">✏️</button></td>
+            <button class="btn btn-secondary btn-sm" onclick="verDetalleDeteriorado(${d.id})">👁</button>
+            <button class="btn btn-secondary btn-sm" onclick="editarDeteriorado(${d.id})">✏️</button>
         </tr>
     `).join('');
 }
 
 async function filtrarDeterioro() {
-    const estado   = document.getElementById('filtro-estado-det').value;
-    const autor    = document.getElementById('filtro-autor-det').value;
+    const estado = document.getElementById('filtro-estado-det').value;
+    const autor = document.getElementById('filtro-autor-det').value;
     const idTecnica = document.getElementById('filtro-tecnica-det').value;
-    const anio     = document.getElementById('filtro-anio-det').value;
+    const anio = document.getElementById('filtro-anio-det').value;
 
     const params = new URLSearchParams();
-    if (estado)    params.set('estado', estado);
-    if (autor)     params.set('autor', autor);
+    if (estado) params.set('estado', estado);
+    if (autor) params.set('autor', autor);
     if (idTecnica) params.set('idTecnica', idTecnica);
-    if (anio)      params.set('anio', anio);
+    if (anio) params.set('anio', anio);
 
     try {
         const list = await api('/obras-deterioradas/filtrar?' + params);
@@ -407,7 +409,8 @@ function renderRestauraciones(list) {
             <td>${formatDate(r.fechaRestauracion)}</td>
             <td>${r.responsable || '—'}</td>
             <td style="max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" title="${r.observaciones || ''}">${r.observaciones || '—'}</td>
-            <td><button class="btn btn-secondary btn-sm" onclick="editarRestauracion(${r.id})">✏️</button></td>
+            <button class="btn btn-secondary btn-sm" onclick="verDetalleRestauracion(${r.id})">👁</button>
+            <button class="btn btn-secondary btn-sm" onclick="editarRestauracion(${r.id})">✏️</button>
         </tr>
     `).join('');
 }
@@ -512,7 +515,7 @@ async function editarPersonal(id) {
         const p = await api('/personal/' + id);
         const f = document.getElementById('form-personal');
         document.getElementById('modal-personal-titulo').textContent = '✏️ Editar Personal';
-        f.querySelector('[name=_id_viejo]').value = p.id; 
+        f.querySelector('[name=_id_viejo]').value = p.id;
         f.querySelector('[name=modo]').value = 'editar';
         f.querySelector('[name=id]').value = p.id;
         f.querySelector('[name=nombre]').value = p.nombre;
@@ -543,6 +546,156 @@ async function submitPersonal(e) {
         cargarPersonal();
         await cargarCatalogos();
     } catch (err) { toast(err.message, 'error'); }
+}
+
+// ══ DETALLE OBRA ══
+async function verDetalleObra(id) {
+    try {
+        const o = await api('/obras/' + id);
+        document.getElementById('detalle-obra-body').innerHTML = `
+            <div class="detalle-grid">
+                <div class="detalle-campo full">
+                    <span class="detalle-label">Título</span>
+                    <span class="detalle-valor">${o.titulo || '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Autor</span>
+                    <span class="detalle-valor">${o.autor || '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Año de Creación</span>
+                    <span class="detalle-valor">${o.fechaCreacion ? o.fechaCreacion.split('-')[0] : '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Tipo de Obra</span>
+                    <span class="detalle-valor">${o.tipo ? `${o.tipo.tipoObra} (${o.tipo.material})` : '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Técnica</span>
+                    <span class="detalle-valor">${o.tecnica?.nombre || '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Fecha Última Revisión</span>
+                    <span class="detalle-valor">${formatDate(o.fechaUltimaRevision)}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Ubicación</span>
+                    <span class="detalle-valor">${o.ubicacion || '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Dimensiones</span>
+                    <span class="detalle-valor">${o.dimensiones || '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Integridad</span>
+                    <span class="detalle-valor">${o.integridad || '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Asociación Histórica</span>
+                    <span class="detalle-valor">${o.asociacionHistorica || '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Lugar de Ejecución</span>
+                    <span class="detalle-valor">${o.lugarEjecucion || '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Restricciones</span>
+                    <span class="detalle-valor">${o.restricciones || '—'}</span>
+                </div>
+                <div class="detalle-campo full">
+                    <span class="detalle-label">Anotaciones</span>
+                    <span class="detalle-valor texto-largo">${o.anotaciones || '—'}</span>
+                </div>
+                <div class="detalle-campo full">
+                    <span class="detalle-label">Link Drive</span>
+                    <span class="detalle-valor">
+                        ${o.linkDrive ? `<a href="${o.linkDrive}" target="_blank">${o.linkDrive}</a>` : '—'}
+                    </span>
+                </div>
+            </div>
+        `;
+        abrirModal('modal-detalle-obra');
+    } catch (e) { toast(e.message, 'error'); }
+}
+
+// ══ DETALLE DETERIORO ══
+async function verDetalleDeteriorado(id) {
+    try {
+        const d = await api('/obras-deterioradas/' + id);
+        document.getElementById('detalle-deterioro-body').innerHTML = `
+            <div class="detalle-grid">
+                <div class="detalle-campo">
+                    <span class="detalle-label">Código</span>
+                    <span class="detalle-valor">Cód. ${d.id}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Obra</span>
+                    <span class="detalle-valor">${d.obra?.titulo || '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Estado</span>
+                    <span class="detalle-valor">${badgeEstado(d.estado)}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Fecha Identificación</span>
+                    <span class="detalle-valor">${formatDate(d.fechaIdentificacion)}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Personal que Reportó</span>
+                    <span class="detalle-valor">${d.personal ? `${d.personal.nombre} ${d.personal.apellido}` : '—'}</span>
+                </div>
+                <div class="detalle-campo full">
+                    <span class="detalle-label">Descripción del Deterioro</span>
+                    <span class="detalle-valor texto-largo">${d.descripcion || '—'}</span>
+                </div>
+            </div>
+        `;
+        abrirModal('modal-detalle-deterioro');
+    } catch (e) { toast(e.message, 'error'); }
+}
+
+// ══ DETALLE RESTAURACIÓN ══
+async function verDetalleRestauracion(id) {
+    try {
+        const r = await api('/restauraciones/' + id);
+        document.getElementById('detalle-restauracion-body').innerHTML = `
+            <div class="detalle-grid">
+                <div class="detalle-campo">
+                    <span class="detalle-label">ID</span>
+                    <span class="detalle-valor">#${r.id}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Obra Deteriorada</span>
+                    <span class="detalle-valor">Cód.${r.obraDeteriorada?.id || '—'} — ${r.obraDeteriorada?.obra?.titulo || ''}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Tipo de Restauración</span>
+                    <span class="detalle-valor">${r.tipoRestauracion === 'intensivo' ? '🔴 Intensivo' : '🟡 Mantenimiento'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Estado</span>
+                    <span class="detalle-valor">${badgeEstado(r.estado)}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Fecha Restauración</span>
+                    <span class="detalle-valor">${formatDate(r.fechaRestauracion)}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Responsable</span>
+                    <span class="detalle-valor">${r.responsable || '—'}</span>
+                </div>
+                <div class="detalle-campo">
+                    <span class="detalle-label">Personal Museo</span>
+                    <span class="detalle-valor">${r.personalMuseo ? `${r.personalMuseo.nombre} ${r.personalMuseo.apellido}` : '—'}</span>
+                </div>
+                <div class="detalle-campo full">
+                    <span class="detalle-label">Observaciones</span>
+                    <span class="detalle-valor texto-largo">${r.observaciones || '—'}</span>
+                </div>
+            </div>
+        `;
+        abrirModal('modal-detalle-restauracion');
+    } catch (e) { toast(e.message, 'error'); }
 }
 
 async function init() {
