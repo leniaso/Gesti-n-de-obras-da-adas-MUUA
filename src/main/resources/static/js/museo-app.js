@@ -158,9 +158,11 @@ function renderTablaObras(obras, tbId, cols) {
             <td>${o.ubicacion || '—'}</td>
             <td>${formatDate(o.fechaUltimaRevision)}</td>
             <td>
-                <button class="btn btn-secondary btn-sm" onclick="verDetalleObra(${o.id})">👁</button>
-                <button class="btn btn-secondary btn-sm" onclick="editarObra(${o.id})">✏️</button>
-                ${o.linkDrive ? `<a href="${o.linkDrive}" target="_blank" class="btn btn-secondary btn-sm">📎</a>` : ''}
+                <div class="acciones-btns">
+                    <button class="btn btn-secondary btn-sm btn-icon" onclick="verDetalleObra(${o.id})" title="Ver detalle">👁</button>
+                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editarObra(${o.id})" title="Editar">✏️</button>
+                    ${o.linkDrive ? `<a href="${o.linkDrive}" target="_blank" class="btn btn-secondary btn-sm btn-icon" title="Drive">📎</a>` : ''}
+                </div>
             </td>
         </tr>
     `).join('');
@@ -314,8 +316,12 @@ function renderDeterioro(list) {
             <td>${formatDate(d.fechaIdentificacion)}</td>
             <td>${d.personal ? d.personal.nombre + ' ' + d.personal.apellido : '—'}</td>
             <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" title="${d.descripcion}">${d.descripcion}</td>
-            <button class="btn btn-secondary btn-sm" onclick="verDetalleDeteriorado(${d.id})">👁</button>
-            <button class="btn btn-secondary btn-sm" onclick="editarDeteriorado(${d.id})">✏️</button>
+            <td>
+                <div class="acciones-btns">
+                    <button class="btn btn-secondary btn-sm btn-icon" onclick="verDetalleDeteriorado(${d.id})" title="Ver detalle">👁</button>
+                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editarDeteriorado(${d.id})" title="Editar">✏️</button>
+                </div>
+            </td>
         </tr>
     `).join('');
 }
@@ -409,8 +415,12 @@ function renderRestauraciones(list) {
             <td>${formatDate(r.fechaRestauracion)}</td>
             <td>${r.responsable || '—'}</td>
             <td style="max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" title="${r.observaciones || ''}">${r.observaciones || '—'}</td>
-            <button class="btn btn-secondary btn-sm" onclick="verDetalleRestauracion(${r.id})">👁</button>
-            <button class="btn btn-secondary btn-sm" onclick="editarRestauracion(${r.id})">✏️</button>
+            <td>
+                <div class="acciones-btns">
+                    <button class="btn btn-secondary btn-sm btn-icon" onclick="verDetalleRestauracion(${r.id})" title="Ver detalle">👁</button>
+                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editarRestauracion(${r.id})" title="Editar">✏️</button>
+                </div>
+            </td>
         </tr>
     `).join('');
 }

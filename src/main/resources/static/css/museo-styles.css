@@ -63,6 +63,19 @@ header {
     grid-column: 1 / -1;
 }
 
+.acciones-btns {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.btn-icon {
+    padding: 4px 7px;
+    font-size: .8rem;
+    line-height: 1;
+}
+
 .detalle-label {
     font-size: .74rem;
     font-weight: 600;
